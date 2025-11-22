@@ -1,5 +1,7 @@
 import type { Disease, PredictionResult, PredictionHistory } from '@/types/disease';
 import { DISEASES } from '@/data/diseases';
+import { supabase } from '@/db/supabase';
+import { predictionsApi } from '@/db/api';
 
 const HISTORY_STORAGE_KEY = 'disease_prediction_history';
 
@@ -51,7 +53,29 @@ export class PredictionService {
     return Math.min(confidence, 95);
   }
 
-  static saveToHistory(symptoms: string[], result: PredictionResult): void {
+  static async saveToHistory(symptoms: string[], result: PredictionResult): Promise<void> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        await predictionsApi.createPrediction({
+          user_id: user.id,
+          symptoms,
+          disease_id: result.disease.id,
+          disease_name: result.disease.name,
+          confidence: result.confidence,
+          matched_symptoms: result.matchedSymptoms,
+        });
+      } else {
+        this.saveToLocalStorage(symptoms, result);
+      }
+    } catch (error) {
+      console.error('Failed to save prediction to database, falling back to localStorage:', error);
+      this.saveToLocalStorage(symptoms, result);
+    }
+  }
+
+  private static saveToLocalStorage(symptoms: string[], result: PredictionResult): void {
     const history = this.getHistory();
     const newEntry: PredictionHistory = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

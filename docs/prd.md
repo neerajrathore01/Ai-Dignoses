@@ -2,66 +2,111 @@
 
 ## 1. Project Overview
 
-### 1.1 System Name
-AI-Based Disease Prediction System
+### 1.1 System Name\nAI-Based Disease Prediction System
 
 ### 1.2 System Description
-An intelligent healthcare system that analyzes user-reported symptoms using Machine Learning algorithms to predict potential diseases and provide basic medical advice. The system serves as a preliminary health assessment tool, similar to online symptom checkers like WebMD.
+An intelligent healthcare system that analyzes user-reported symptoms using Machine Learning algorithms to predict potential diseases and provide basic medical advice. The system serves as a preliminary health assessment tool, similar to online symptom checkers like WebMD. Users can register accounts to track their symptom check history through a personalized dashboard.
 
-### 1.3 Core Objectives
-- Accept symptom inputs from users
+### 1.3 Core Objectives\n- Accept symptom inputs from users
 - Analyze symptoms using trained ML models
 - Predict the most likely disease with confidence scores
 - Provide actionable health advice and next steps
-- Optional: Store prediction history for reference
+- User authentication and profile management
+- Store and display prediction history in user dashboard
 
 ## 2. System Features
 
-### 2.1 User Input System
+### 2.1 User Authentication System
+- **Registration**: Email and password-based account creation
+- **Login**: Secure authentication with email/password credentials
+- **Password Security**: Encrypted password storage\n- **Session Management**: Maintain user login state\n- **Logout**: Secure session termination\n
+### 2.2 User Profile Management
+- **User Profiles Table**: Store user information including:
+  - User ID (unique identifier)
+  - Email address
+  - Encrypted password
+  - Registration date
+  - Profile information (optional: name, age, gender)\n- **Profile Access**: Users can view and update their profile information
+\n### 2.3 Protected Dashboard
+- **Access Control**: Only authenticated users can access the dashboard
+- **Symptom Check History**: Display all previous symptom checks including:
+  - Check date and time
+  - Symptoms entered
+  - Predicted disease\n  - Confidence score
+  - Advice provided
+- **History Management**: View, filter, and search past predictions
+- **Data Privacy**: Users can only access their own history
+
+### 2.4 User Input System
 - **Symptom Entry Interface**: Users can input multiple symptoms including:
-  - Fever
-  - Headache
+  - Fever\n  - Headache
   - Body pain
   - Cough
   - Nausea
   - Joint pain
   - Rash
-  - Other common symptoms
-- **Input Methods**: Web-based interface (primary), with optional command-line demo
-\n### 2.2 Symptom Dataset
-- **Dataset Structure**: Contains symptom-disease mappings\n- **Coverage**: 20-40 diseases with 10-20 symptoms each\n- **Sample Diseases**: Pneumonia, Migraine, Dengue, Diabetes, Flu, etc.
+  - Other common symptoms\n- **Input Methods**: Web-based interface (primary), with optional command-line demo
+
+### 2.5 Symptom Dataset
+- **Dataset Structure**: Contains symptom-disease mappings
+- **Coverage**: 20-40 diseases with 10-20 symptoms each
+- **Sample Diseases**: Pneumonia, Migraine, Dengue, Diabetes, Flu, etc.
 - **Data Source**: Use existing healthcare datasets or create custom dataset\n
-### 2.3 ML Prediction Engine
-- **Model Types**: Decision Tree, Random Forest, Naive Bayes, or SVM
-- **Recommended**: Random Forest or Decision Tree for categorical data handling
-- **Symptom Encoding**: One-hot encoding and multi-label binary vectors
+### 2.6 ML Prediction Engine
+- **Model Types**: Decision Tree, Random Forest, Naive Bayes, or SVM\n- **Recommended**: Random Forest or Decision Tree for categorical data handling\n- **Symptom Encoding**: One-hot encoding and multi-label binary vectors
 - **Processing Flow**: Symptom input → Binary vector conversion → ML model prediction → Result output
 
-### 2.4 Disease Prediction Output
-- **Predicted Disease**: Primary diagnosis result
+### 2.7 Disease Prediction Output\n- **Predicted Disease**: Primary diagnosis result
 - **Confidence Score**: Model accuracy percentage
 - **Disease Description**: Brief explanation of the condition
-- **Basic Precautions**: Immediate care recommendations
-- **Suggested Tests**: Relevant medical tests (optional)
+- **Basic Precautions**: Immediate care recommendations\n- **Suggested Tests**: Relevant medical tests (optional)
 - **Doctor Consultation Flag**: Indicator for professional medical advice requirement
+- **History Storage**: Automatically save prediction results to user's history
 
-### 2.5 Optional Advanced Features
+### 2.8 Optional Advanced Features
 - **Chatbot System**: Step-by-step symptom inquiry through conversational interface
-- **Recommendation Engine**: \n  - Doctor specialization suggestions
-  - Nearby hospital information (manual entry)\n- **Voice Input**: Speech-to-text symptom entry
+- **Recommendation Engine**: 
+  - Doctor specialization suggestions
+  - Nearby hospital information (manual entry)
+- **Voice Input**: Speech-to-text symptom entry
 - **Emergency Alerts**: Critical condition warnings for severe symptoms
 
 ## 3. Technical Architecture
 
 ### 3.1 System Flow
-User Input → Preprocessing → ML Model → Disease Prediction → Advice Module → Output Screen
+User Registration/Login → User Input → Preprocessing → ML Model → Disease Prediction → Advice Module → Output Screen → Save to History → Dashboard Display
 
 ### 3.2 Technology Stack
 - **Frontend**: HTML/CSS/JavaScript or React
 - **Backend**: Python with Flask or FastAPI
+- **Database**: PostgreSQL or MySQL for user profiles and history storage
+- **Authentication**: JWT tokens or session-based authentication
 - **ML Libraries**: scikit-learn, pandas, numpy
 - **Data Processing**: Binary encoding for symptom vectorization
-\n### 3.3 Data Structure Example
+
+### 3.3 Database Schema
+\n**Users Table**:
+| Field | Type | Description |
+|-------|------|-------------|
+| user_id | INT (Primary Key) | Unique user identifier |
+| email | VARCHAR(255) | User email address |
+| password_hash | VARCHAR(255) | Encrypted password |
+| created_at | TIMESTAMP | Registration date |
+| name | VARCHAR(100) | User name (optional) |
+| age | INT | User age (optional) |
+| gender | VARCHAR(20) | User gender (optional) |
+\n**Prediction History Table**:
+| Field | Type | Description |
+|-------|------|-------------|
+| history_id | INT (Primary Key) | Unique history record ID |
+| user_id | INT (Foreign Key) | Reference to Users table |
+| check_date | TIMESTAMP | Date and time of symptom check |
+| symptoms | TEXT | JSON array of entered symptoms |
+| predicted_disease | VARCHAR(100) | Predicted disease name |
+| confidence_score | FLOAT | Model confidence percentage |
+| advice | TEXT | Provided medical advice |
+| suggested_tests | TEXT | Recommended tests|
+\n### 3.4 Symptom Data Structure Example
 | Fever | Cough | Rash | Headache | Disease |
 |-------|-------|------|----------|----------|
 | 1 | 1 | 0 | 0 | Flu |
@@ -70,15 +115,18 @@ User Input → Preprocessing → ML Model → Disease Prediction → Advice Modu
 ## 4. Output Report Format
 
 **Example Display**:
-- Predicted Disease: Dengue\n- Model Accuracy: 92%
+- Predicted Disease: Dengue
+- Model Accuracy: 92%
 - Advice:\n  - Drink ORS\n  - Take adequate rest
-  - Avoid painkillers like ibuprofen\n- Tests Suggested: Platelet count, CBC
+  - Avoid painkillers like ibuprofen
+- Tests Suggested: Platelet count, CBC
 - Doctor Consultation: Recommended
 
 ## 5. Design Style
 
 - **Color Scheme**: Clean medical theme with primary colors of soft blue (#4A90E2) and white, accented with warning red (#E74C3C) for critical alerts
-- **Layout**: Card-based interface with clear section separation for symptom input, prediction results, and advice panels
-- **Visual Elements**: Rounded corners (8px radius) for all containers, subtle shadows for depth, medical-themed icons for symptoms and diseases
+- **Layout**: Card-based interface with clear section separation for symptom input, prediction results, advice panels, and dashboard history table
+- **Visual Elements**: Rounded corners (8px radius) for all containers, subtle shadows for depth, medical-themed icons for symptoms and diseases, user profile avatar in navigation bar
 - **Typography**: Sans-serif font (Roboto or Inter) for readability, with clear hierarchy between headings and body text
-- **Interactive Elements**: Smooth transitions on button clicks, progress indicators during prediction processing, color-coded confidence scores (green for high, yellow for medium, red for low confidence)
+- **Interactive Elements**: Smooth transitions on button clicks, progress indicators during prediction processing, color-coded confidence scores (green for high, yellow for medium, red for low confidence), hover effects on history records
+- **Dashboard Layout**: Tabular view for history with sortable columns, filter options by date range and disease type, pagination for large datasets

@@ -1,6 +1,9 @@
 import Home from './pages/Home';
 import Results from './pages/Results';
 import History from './pages/History';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import type { ReactNode } from 'react';
 
 interface RouteConfig {
@@ -28,6 +31,24 @@ const routes: RouteConfig[] = [
     path: '/history',
     element: <History />,
     visible: true,
+  },
+  {
+    name: 'Login',
+    path: '/login',
+    element: <Login />,
+    visible: false,
+  },
+  {
+    name: 'Dashboard',
+    path: '/dashboard',
+    element: <Dashboard />,
+    visible: false,
+  },
+  {
+    name: 'Admin',
+    path: '/admin',
+    element: <AdminDashboard />,
+    visible: false,
   },
 ];
 
