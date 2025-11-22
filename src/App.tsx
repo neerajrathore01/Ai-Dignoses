@@ -10,9 +10,9 @@ export default function App() {
     <Router>
       <AuthProvider client={supabase}>
         <Toaster />
-        <RequireAuth whiteList={['/login', '/', '/results', '/history']}>
-          <div className="flex min-h-screen flex-col">
-            <Header />
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <RequireAuth whiteList={['/login', '/', '/results', '/history']}>
             <main className="flex-grow">
               <Routes>
                 {routes.map((route, index) => (
@@ -25,8 +25,8 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
-          </div>
-        </RequireAuth>
+          </RequireAuth>
+        </div>
       </AuthProvider>
     </Router>
   );
