@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AlertCircle, ArrowLeft, CheckCircle2, Activity, AlertTriangle, FileText, Stethoscope } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, Activity, AlertTriangle, FileText, Stethoscope, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,14 +14,15 @@ import { SYMPTOMS } from '@/data/symptoms';
 export default function Results() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { predictions, selectedSymptoms } = location.state as {
+  const { predictions, selectedSymptoms, uploadedImages } = location.state as {
     predictions: PredictionResult[];
     selectedSymptoms: string[];
-  } || { predictions: [], selectedSymptoms: [] };
+    uploadedImages?: string[];
+  } || { predictions: [], selectedSymptoms: [], uploadedImages: [] };
 
   useEffect(() => {
     if (!predictions || predictions.length === 0) {
-      navigate('/');
+      navigate('/analyze');
       return;
     }
 
@@ -59,7 +60,7 @@ export default function Results() {
       <div className="container mx-auto px-4 py-8 xl:py-12">
         <div className="mx-auto max-w-6xl">
           <div className="mb-6">
-            <Button variant="ghost" onClick={() => navigate('/')}>
+            <Button variant="ghost" onClick={() => navigate('/analyze')}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Symptom Selection
             </Button>
@@ -95,6 +96,38 @@ export default function Results() {
               </CardContent>
             </Card>
           </div>
+
+          {uploadedImages && uploadedImages.length > 0 && (
+            <div className="mb-6">
+              <Card className="medical-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <ImageIcon className="h-4 w-4" />
+                    Uploaded Visual Symptoms ({uploadedImages.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {uploadedImages.map((imageUrl, index) => (
+                      <div key={index} className="overflow-hidden rounded-lg border">
+                        <img
+                          src={imageUrl}
+                          alt={`Visual symptom ${index + 1}`}
+                          className="h-48 w-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <Alert className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Visual symptom analysis is currently in beta. The prediction is primarily based on your selected symptoms.
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           <div className="mb-8">
             <Card className="medical-card border-primary/50">

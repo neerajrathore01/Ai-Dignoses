@@ -12,7 +12,7 @@ export default function App() {
         <Toaster />
         <div className="flex min-h-screen flex-col">
           <Header />
-          <RequireAuth whiteList={['/login', '/', '/results', '/history']}>
+          <RequireAuth whiteList={['/login', '/', '/analyze', '/results', '/history']}>
             <main className="flex-grow">
               <Routes>
                 {routes.map((route, index) => (

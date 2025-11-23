@@ -1,4 +1,5 @@
-import Home from './pages/Home';
+import Landing from './pages/Landing';
+import Analyze from './pages/Analyze';
 import Results from './pages/Results';
 import History from './pages/History';
 import Login from './pages/Login';
@@ -17,7 +18,13 @@ const routes: RouteConfig[] = [
   {
     name: 'Home',
     path: '/',
-    element: <Home />,
+    element: <Landing />,
+    visible: true,
+  },
+  {
+    name: 'Analyze',
+    path: '/analyze',
+    element: <Analyze />,
     visible: true,
   },
   {
