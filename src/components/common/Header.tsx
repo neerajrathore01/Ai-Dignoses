@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ModeToggle } from '@/components/mode-toggle';
 import { supabase } from '@/db/supabase';
 import { profilesApi } from '@/db/api';
 import routes from '@/routes';
@@ -91,6 +92,8 @@ export default function Header() {
               </Link>
             ))}
 
+            <ModeToggle />
+
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -133,6 +136,8 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-2 xl:hidden">
+            <ModeToggle />
+
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
