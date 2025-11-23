@@ -219,7 +219,7 @@ export default function Analyze() {
             'Take clear photos to track progression',
             'Consult a dermatologist or healthcare provider for proper diagnosis',
           ],
-          recommendedTests: [
+          suggestedTests: [
             'Physical examination by a healthcare professional',
             'Skin biopsy (if recommended by doctor)',
             'Allergy testing (if suspected)',
@@ -228,6 +228,7 @@ export default function Analyze() {
         },
         confidence: 0,
         matchedSymptoms: [],
+        timestamp: Date.now(),
       };
 
       navigate('/results', {
