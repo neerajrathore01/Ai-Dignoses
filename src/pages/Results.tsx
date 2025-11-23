@@ -14,11 +14,12 @@ import { SYMPTOMS } from '@/data/symptoms';
 export default function Results() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { predictions, selectedSymptoms, uploadedImages } = location.state as {
+  const { predictions, selectedSymptoms, uploadedImages, imageOnlyAnalysis } = location.state as {
     predictions: PredictionResult[];
     selectedSymptoms: string[];
     uploadedImages?: string[];
-  } || { predictions: [], selectedSymptoms: [], uploadedImages: [] };
+    imageOnlyAnalysis?: boolean;
+  } || { predictions: [], selectedSymptoms: [], uploadedImages: [], imageOnlyAnalysis: false };
 
   useEffect(() => {
     if (!predictions || predictions.length === 0) {
@@ -26,10 +27,11 @@ export default function Results() {
       return;
     }
 
-    if (predictions.length > 0) {
+    // Only save to history if it's not an image-only analysis
+    if (predictions.length > 0 && !imageOnlyAnalysis && selectedSymptoms.length > 0) {
       PredictionService.saveToHistory(selectedSymptoms, predictions[0]);
     }
-  }, [predictions, selectedSymptoms, navigate]);
+  }, [predictions, selectedSymptoms, navigate, imageOnlyAnalysis]);
 
   if (!predictions || predictions.length === 0) {
     return null;
@@ -68,34 +70,50 @@ export default function Results() {
 
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-3xl font-bold text-foreground xl:text-4xl">
-              Prediction Results
+              {imageOnlyAnalysis ? 'Visual Analysis Results' : 'Prediction Results'}
             </h1>
             <p className="text-muted-foreground">
-              Based on your symptoms, here are the most likely conditions
+              {imageOnlyAnalysis 
+                ? 'Based on your uploaded images, here is our preliminary analysis'
+                : 'Based on your symptoms, here are the most likely conditions'}
             </p>
           </div>
 
-          <div className="mb-6">
-            <Card className="medical-card">
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Your Selected Symptoms
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {selectedSymptoms.map(symptomId => {
-                    const symptom = SYMPTOMS.find(s => s.id === symptomId);
-                    return symptom ? (
-                      <Badge key={symptomId} variant="outline">
-                        {symptom.name}
-                      </Badge>
-                    ) : null;
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {imageOnlyAnalysis && (
+            <Alert className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Image-Only Analysis</AlertTitle>
+              <AlertDescription>
+                You've uploaded images without selecting symptoms. For more accurate predictions, 
+                please also select related symptoms from the symptom list. This will help our AI 
+                provide better diagnosis suggestions.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {selectedSymptoms.length > 0 && (
+            <div className="mb-6">
+              <Card className="medical-card">
+                <CardHeader>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    Your Selected Symptoms
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedSymptoms.map(symptomId => {
+                      const symptom = SYMPTOMS.find(s => s.id === symptomId);
+                      return symptom ? (
+                        <Badge key={symptomId} variant="outline">
+                          {symptom.name}
+                        </Badge>
+                      ) : null;
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           {uploadedImages && uploadedImages.length > 0 && (
             <div className="mb-6">
@@ -150,20 +168,38 @@ export default function Results() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="text-sm font-medium">Confidence Score</span>
-                    <span className={`text-lg font-bold ${PredictionService.getConfidenceColor(topPrediction.confidence)}`}>
-                      {topPrediction.confidence}%
-                    </span>
-                  </div>
-                  <Progress value={topPrediction.confidence} className="h-3" />
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Based on {topPrediction.matchedSymptoms.length} matching symptoms
-                  </p>
-                </div>
+                {!imageOnlyAnalysis && (
+                  <>
+                    <div>
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-sm font-medium">Confidence Score</span>
+                        <span className={`text-lg font-bold ${PredictionService.getConfidenceColor(topPrediction.confidence)}`}>
+                          {topPrediction.confidence}%
+                        </span>
+                      </div>
+                      <Progress value={topPrediction.confidence} className="h-3" />
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Based on {topPrediction.matchedSymptoms.length} matching symptoms
+                      </p>
+                    </div>
 
-                <Separator />
+                    <Separator />
+                  </>
+                )}
+
+                {imageOnlyAnalysis && (
+                  <>
+                    <Alert>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        This is a preliminary visual analysis. AI-powered image recognition is currently in development. 
+                        The recommendations below are general guidelines for visible symptoms.
+                      </AlertDescription>
+                    </Alert>
+
+                    <Separator />
+                  </>
+                )}
 
                 <div>
                   <h3 className="mb-2 flex items-center gap-2 font-semibold">

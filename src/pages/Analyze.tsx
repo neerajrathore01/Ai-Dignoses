@@ -202,6 +202,46 @@ export default function Analyze() {
       return;
     }
 
+    // If only images are uploaded (no symptoms selected)
+    if (selectedSymptoms.length === 0 && uploadedImages.length > 0) {
+      // Create a placeholder prediction for image-only analysis
+      const imagePrediction = {
+        disease: {
+          id: 'visual-analysis',
+          name: 'Visual Symptom Analysis',
+          description: 'Based on the uploaded images, we are analyzing visible symptoms. For more accurate results, please also select related symptoms from the list above.',
+          symptoms: [],
+          severity: 'medium' as const,
+          precautions: [
+            'Keep the affected area clean and dry',
+            'Avoid scratching or touching the area',
+            'Monitor for any changes in appearance',
+            'Take clear photos to track progression',
+            'Consult a dermatologist or healthcare provider for proper diagnosis',
+          ],
+          recommendedTests: [
+            'Physical examination by a healthcare professional',
+            'Skin biopsy (if recommended by doctor)',
+            'Allergy testing (if suspected)',
+          ],
+          requiresDoctorConsultation: true,
+        },
+        confidence: 0,
+        matchedSymptoms: [],
+      };
+
+      navigate('/results', {
+        state: {
+          predictions: [imagePrediction],
+          selectedSymptoms: [],
+          uploadedImages: uploadedImages.map(img => img.preview),
+          imageOnlyAnalysis: true,
+        }
+      });
+      return;
+    }
+
+    // Normal symptom-based prediction
     const predictions = PredictionService.predictDisease(selectedSymptoms);
     
     if (predictions.length === 0) {
